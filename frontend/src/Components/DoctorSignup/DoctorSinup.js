@@ -1,10 +1,8 @@
 import React from 'react'
-import './signup.css'
-import { singUpSchema } from '../../schemas'
+import { DoctorSignUpSchema } from '../../schemas'
+import {useFormik} from "formik"
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../Axios/axiosPrivate';
-import {useFormik} from "formik"
-
 const initialValues={
     firstname:"",
     lastname:"",
@@ -16,45 +14,41 @@ const initialValues={
 
 }
 
-export const Signup = () => {
+
+const DoctorSinup = () => {
     const navigate = useNavigate();
-    
-    
-
-   const {values,errors,handleBlur,handleChange,handleSubmit}= useFormik({
+    const {values,errors,handleBlur,handleChange,handleSubmit} = useFormik({
         initialValues:initialValues,
-        validationSchema:singUpSchema,
-       onSubmit:async(values,actions)=>{
-        try {
-            const response = await axiosInstance.post(`users/register/`, {
-              first_name: values.firstname,
-              last_name: values.lastname,
-              email: values.email,
-              password: values.password,
-              phone_number:values.phoneno
-            });
-            if (response.status === 200 ) {
-              navigate('/userlogin');
-            } else {
-              alert('not valid credentials');
-            }
-          } catch (error) {
-            // eslint-disable-next-line no-alert
-            alert(error);
-            console.log(error);
-          }
-          actions.resetForm();
+        validationSchema:DoctorSignUpSchema,
+        onSubmit:async(values,actions)=>{
+        try{
+                const response = await axiosInstance.post(`doctor/register/`, {
+                    first_name: values.firstname,
+                    last_name: values.lastname,
+                    email: values.email,
+                    password: values.password,
+                    phone_number:values.phoneno
+                  })
+                  if (response.status ===200){
+                    navigate('/')
+                  }else {
+                    alert('not valid credentials');
+                  }
+                } catch (error) {
+                  // eslint-disable-next-line no-alert
+                  alert(error);
+                  console.log(error);
+                }
+                actions.resetForm();
+                
 
-
-
-       }
-    });
-    
-    
-    return (
-        <>
-        <section className="max-w-4xl p-6 mx-auto  rounded-md shadow-md  reg-back ">
-            <h2 className="text-lg font-semibold text-black-700 capitalize dark:text-black-200">SignUp</h2>
+            
+        }
+    })
+  return (
+    <>
+     <section className="max-w-4xl p-6 mx-auto  rounded-md shadow-md  reg-back ">
+            <h2 className="text-lg font-semibold text-black-700 capitalize dark:text-black-200">Doctor SignUp</h2>
 
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
@@ -100,7 +94,9 @@ export const Signup = () => {
                 Have Account?Login
             </form>
         </section>
+
     </>
   )
 }
-export default Signup
+
+export default DoctorSinup

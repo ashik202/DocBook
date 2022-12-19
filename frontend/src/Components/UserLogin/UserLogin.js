@@ -1,23 +1,44 @@
-import React from 'react'
+import React from 'react';
 import './userlogin.css'
 
 import {useFormik} from "formik";
 import {LoginSchemas} from '../../schemas'
+import axiosInstance from '../../Axios/axiosPrivate';
+import {  useNavigate } from 'react-router-dom';
 
 const initialValues={
-    username:"",
+    email:"",
     password:"",
 }
 
 export const UserLogin = () => {
+    const Navigate=useNavigate();
     const {values,errors,handleBlur,handleChange,handleSubmit}= useFormik({
         initialValues:initialValues,
         validationSchema:LoginSchemas,
-        onSubmit:(values)=>{
+        onSubmit:async (values,actions)=>{
+            try{
+                const response =await axiosInstance.post(`user/login/`,{
+                    email:values.email,
+                    password:values.password
+                });
+                if (response.status===200 && response.data.is_doctor===true)
+                {
+                    Navigate('/doctor_signup')
+                }
+                if (response.status===200 && response.data.is_user===true)
+                {
+                    Navigate('/')
+                }
+
+                console.log(response.data)
+            }catch{
+                alert('somethine went worn')
+            }
+            actions.resetForm();
             
         }
     })
-    
   return (
     <>
     <div className="w-full max-w-sm p-6 m-auto mx-auto bg-white rounded-lg shadow-md bg-gray-200">
@@ -25,9 +46,9 @@ export const UserLogin = () => {
 
     <form className="mt-6" onSubmit={handleSubmit}>
         <div>
-            <label  className="block text-sm text-gray-800 dark:text-black">Username</label>
-            <input name="username" id="username" type="text" className="block w-full px-4 p-2 mt-2 text-bg-white border rounded-lg dark: dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" 
-            value={values.username} onChange={handleChange} onBlur={handleBlur}/>{<p className='Form_error'>{errors.username}</p>}
+            <label  className="block text-sm text-gray-800 dark:text-black">Email</label>
+            <input name="email" id="email" type="text" className="block w-full px-4 p-2 mt-2 text-bg-white border rounded-lg dark: dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" 
+            value={values.email} onChange={handleChange} onBlur={handleBlur}/>{<p className='Form_error'>{errors.email}</p>}
         </div>
 
         <div className="mt-4">
@@ -73,5 +94,5 @@ export const UserLogin = () => {
 </div>
     </>
   )
-}
+};
 export default  UserLogin

@@ -16,7 +16,20 @@ export const singUpSchema = Yup.object({
 });
 
 export const LoginSchemas=Yup.object({
-    username:Yup.string().required("Enter Username."),
+    email:Yup.string().required("Enter Email."),
     password:Yup.string().required("Enter Password")
     
-})
+});
+export const DoctorSignUpSchema = Yup.object({
+    firstname:Yup.string().min(2).max(25).required("Enter the first name"),
+    lastname:Yup.string().min(2).max(25).required("Enter the last name"),
+    email:Yup.string().email().required("enter the email"),
+    phoneno:Yup.string().matches(phoneRegExp, 'Phone number is not valid').required(),
+    password:Yup.string().min(6).required("Enter the password"),
+    
+    passwordConfirmation: Yup
+    .string()
+    .oneOf([Yup.ref('password'), null], 'Password must match')
+    .required('Required'),
+
+});
